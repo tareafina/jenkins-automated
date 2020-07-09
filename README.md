@@ -44,4 +44,14 @@ The main key of the project is improve the scripting skills to, so we will try t
 **If is necessary add the following variables**
 
 `export PATH=$PATH:'/c/Program Files/Oracle/VirtualBox'`
+
 `export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"`
+
+**After Vagrant Up**
+This will bring up two Jenkins instances
+
+`http://192.168.56.10:8080`
+
+and
+
+`http://192.168.56.11:8080`
