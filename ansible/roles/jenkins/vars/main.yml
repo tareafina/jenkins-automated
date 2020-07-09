@@ -1,0 +1,11 @@
+---
+# vars file for jenkins
+packages:
+  java: openjdk-8-jdk
+
+repo:
+  key: http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key
+  uri: "deb http://pkg.jenkins-ci.org/debian-stable binary/"
+
+wizard:
+  java_args: "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"

@@ -1,0 +1,40 @@
+---
+# tasks file for jenkins
+- name: installing openjdk
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - "{{ packages.java }}"
+
+- name: adding jenkins repo key
+  apt_key:
+    url: "{{ repo.key }}"
+    state: present
+
+- name: adding jenkins repo
+  apt_repository:
+    repo: "{{ repo.uri }}"
+    state: present
+    update_cache: yes
+
+- name: installing jenkins
+  apt:
+    name: jenkins
+    state: present
+    update_cache: yes
+  notify:
+    - Disable Wizard
+    - Start Jenkins
+    - Enable Jenkins
+
+- name: enable listening port
+  ufw:
+    rule: allow
+    port: 8080
+
+- name: initial jenkins configuration
+  template: src=basic-security.groovy dest=/var/lib/jenkins/init.groovy.d/
+  notify:
+    - Restart Jenkins
