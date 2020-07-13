@@ -1,0 +1,27 @@
+---
+# vars file for jenkins
+packages:
+  java: openjdk-8-jdk
+
+repo:
+  key: http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key
+  uri: "deb http://pkg.jenkins-ci.org/debian-stable binary/"
+
+wizard:
+  java_args: "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
+
+jenkins:
+  user: admin 
+  pwd: jenkinsAdmin
+  host: 'http://{{ ansible_facts["eth1"]["ipv4"]["address"] }}:8080/'
+  prefix: 'login?from=%2F'
+  update_center: "https://updates.jenkins.io/update-center.json"
+  dest: 'default.json'
+  home: '/var/lib/jenkins/'
+  update_path: 'updates/'
+  init: 'init.groovy.d'
+
+plugins:
+  - 'blueocean'
+  - 'ansible'
+  - 'terraform'

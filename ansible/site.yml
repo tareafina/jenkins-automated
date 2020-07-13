@@ -1,0 +1,12 @@
+---
+- name: Run Base role
+  hosts: all
+  become: true
+  roles:
+    - role: base
+
+- name: Run Jenkins role
+  hosts: all
+  become: true
+  roles:
+    - role: jenkins

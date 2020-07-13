@@ -1,0 +1,6 @@
+---
+# Task file for base
+- name: apt update
+  apt: 
+    update_cache: yes 
+    force_apt_get: yes

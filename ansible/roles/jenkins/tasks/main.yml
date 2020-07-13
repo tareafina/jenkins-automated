@@ -1,0 +1,109 @@
+---
+# tasks file for jenkins
+- name: installing openjdk
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - "{{ packages.java }}"
+
+- name: adding jenkins repo key
+  apt_key:
+    url: "{{ repo.key }}"
+    state: present
+
+- name: adding jenkins repo
+  apt_repository:
+    repo: "{{ repo.uri }}"
+    state: present
+    update_cache: yes
+
+- name: installing jenkins
+  apt:
+    name: jenkins
+    state: present
+    update_cache: yes
+  notify:
+    - Disable Wizard
+    - Start Jenkins
+    - Enable Jenkins
+
+- name: flushing handlers
+  meta: flush_handlers
+  
+- name: creating init directory
+  file:
+    path: "{{ jenkins.home }}{{ jenkins.init }}"
+    state: directory
+    owner: jenkins
+    group: jenkins
+    
+- name: enable listening port
+  ufw:
+    rule: allow
+    port: 8080
+
+- name: initial jenkins configuration
+  template: src=basic-security.groovy.j2 dest="{{ jenkins.home }}{{ jenkins.init }}/basic-security.groovy"
+  notify:
+    - Restart Jenkins
+    - Waiting Jenkins
+    
+ - name: create admin user
+  template: src=create-user.groovy.j2 dest="{{ jenkins.home }}{{ jenkins.init }}/create-user.groovy"
+
+- name: flushing handlers
+  meta: flush_handlers
+
+- name: remove initial configuration file
+  file:
+    path: "{{ jenkins.home }}{{ jenkins.init }}/basic-security.groovy"
+    state: absent
+  notify:
+    - Restart Jenkins
+    - Waiting Jenkins
+
+- name: flushing handlers
+  meta: flush_handlers
+
+- name: download latest plugins from upload center
+  get_url:
+    url: "{{ jenkins.update_center }}"
+    dest: "{{ jenkins.home }}{{jenkins.update_path}}{{ jenkins.dest }}"
+    owner: jenkins
+    group: jenkins
+    mode: 0440
+  register: get_result
+  until: get_result is success
+  retries: 3
+  delay: 2
+
+- name: Remove first and last line from json file.
+  replace:
+    path: "{{ jenkins.home }}{{jenkins.update_path}}{{ jenkins.dest }}"
+    regexp: "1d;$d"
+
+- name: install plugins
+  jenkins_plugin:
+    name: "{{ item }}"
+    url_username: "{{ jenkins.user}}"
+    url_password: "{{ jenkins.pwd }}"
+    url: "{{ jenkins.host }}"
+    updates_url: "{{ jenkins.update_center }}"
+    state: present
+    with_dependencies: true
+    use_proxy: false
+    timeout: 30
+  with_items:
+    - "{{ plugins }}"
+  notify:
+    - Restart Jenkins
+    - Waiting Jenkins
+  register: plugin_install
+  until: plugin_install is success
+  retries: 5
+  delay: 5
+
+- name: flushing handlers
+  meta: flush_handlers

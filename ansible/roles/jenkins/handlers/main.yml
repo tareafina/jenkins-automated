@@ -1,0 +1,32 @@
+---
+# handlers file for jenkins
+- name: Disable Wizard
+  lineinfile:
+    path: /etc/default/jenkins
+    regexp: '^JAVA_ARGS='
+    line: JAVA_ARGS="{{ wizard.java_args }}"
+
+- name: Start Jenkins
+  service:
+    name: jenkins
+    state: started
+
+- name: Enable Jenkins
+  service:
+    name: jenkins
+    enabled: yes
+
+- name: Restart Jenkins
+  service:
+    name: jenkins
+    state: restarted
+
+- name: Waiting Jenkins
+  uri:
+    url: "{{ jenkins.host }}{{ jenkins.prefix }}"
+    status_code: 200
+    method: GET
+  register: result
+  until: result.status == 200
+  retries: 10
+  delay: 5
