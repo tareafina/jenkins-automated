@@ -55,3 +55,8 @@ This will bring up two Jenkins instances
 and
 
 `http://192.168.56.11:8080`
+
+** Default Credentials**
+
+**User:** `admin`
+**Pwd:** `jenkinsAdmin`
