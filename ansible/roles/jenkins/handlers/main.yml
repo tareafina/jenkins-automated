@@ -20,3 +20,13 @@
   service:
     name: jenkins
     state: restarted
+
+- name: Waiting Jenkins
+  uri:
+    url: "{{ jenkins.host }}{{ jenkins.prefix }}"
+    status_code: 200
+    method: GET
+  register: result
+  until: result.status == 200
+  retries: 10
+  delay: 5
