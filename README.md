@@ -56,7 +56,8 @@ and
 
 `http://192.168.56.11:8080`
 
-** Default Credentials**
+**Default Credentials**
 
 **User:** `admin`
+
 **Pwd:** `jenkinsAdmin`
